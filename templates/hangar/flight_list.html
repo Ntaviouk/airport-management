@@ -1,161 +1,454 @@
 {% extends "base.html" %}
-
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block content %}
-
 <style>
   html, body {
-      height: 100%;
-      margin: 0;
-      background-color: #121212; /* Темний фон для всього тіла */
-      color: white; /* Світлий текст для контенту */
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 
-  .background-image {
-      background-image: url('{% static "images/for_flights.jpg" %}');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 100vh;
-      width: 100vw;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      flex-direction: column;
+  body {
+    background-image: url('{% static "images/for_flights.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
   }
 
-  .container {
-      position: relative;
-      z-index: 1;
-      background-color: rgba(31, 31, 31, 0.8); /* Напівпрозорий фон для контейнера */
-      padding: 20px; /* Внутрішній відступ */
-      border-radius: 10px; /* Закруглення кутів */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: transparent !important;
+  }
+
+  .container-fluid .row {
+    background: transparent !important;
+  }
+
+  .container-fluid .col-12 {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .container-fluid > .row:first-child {
+    flex-shrink: 0;
+    background: transparent !important;
+  }
+
+  .container-fluid > .row:last-child {
+    flex: 1;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    overflow-y: auto;
+    background: transparent !important;
+  }
+
+  /* Navbar styles */
+  nav {
+    background-color: #05070d !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  nav .container-fluid {
+    min-height: auto !important;
+    flex-direction: row !important;
+    padding: 0.5rem 1rem !important;
+    background: transparent !important;
+  }
+
+  .navbar {
+    background-color: #1a1a1a !important;
+    width: 100%;
+  }
+
+  .navbar-brand {
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  .navbar-nav .nav-link {
+    color: #ffffff !important;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #4db380 !important;
+  }
+
+  /* Flight list wrapper */
+  .flights-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  /* Search form container */
+  .search-container {
+    background: rgba(15, 15, 35, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 15px !important;
+    padding: 2rem !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    animation: slideUp 0.8s ease-out !important;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .search-title {
+    color: #ffffff !important;
+    font-size: 1.3rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+    text-shadow: 0 0 15px rgba(45, 143, 95, 0.4) !important;
   }
 
   .form-inline {
-      background-color: #1f1f1f; /* Темний фон для форми */
-      border-radius: 5px; /* Закруглення кутів */
-      padding: 10px; /* Додайте внутрішній відступ */
-      display: flex;
-      align-items: center; /* Вирівнювання елементів по центру */
+    display: flex !important;
+    gap: 1rem !important;
+    align-items: flex-end !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
   }
 
   .form-group {
-      margin-right: 1rem; /* Відстань між елементами форми */
+    margin: 0 !important;
+    flex: 1 !important;
+    min-width: 200px !important;
   }
 
-  .btn-outline-info {
-      color: #17a2b8; /* Світлий колір для кнопок */
-      border-color: #17a2b8; /* Обводка кнопки */
+  .form-group label {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
   }
 
-  .btn-outline-info:hover {
-      background-color: #17a2b8; /* Зміна фону кнопки при наведенні */
-      color: white; /* Зміна кольору тексту кнопки при наведенні */
+  input[type="text"].custom-input {
+    width: 100% !important;
+    padding: 0.8rem 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-size: 0.95rem !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+  }
+
+  input[type="text"].custom-input::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  input[type="text"].custom-input:focus {
+    outline: none !important;
+    border-color: #3d8f5f !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 0 15px rgba(45, 143, 95, 0.2) !important;
+  }
+
+  .btn-search,
+  .btn-clear {
+    padding: 0.8rem 1.5rem !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    white-space: nowrap !important;
+    font-size: 0.95rem !important;
+    background: none !important;
+  }
+
+  .btn-search {
+    background: linear-gradient(135deg, #2d5f3f, #3d8f5f) !important;
+  }
+
+  .btn-search:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(45, 95, 63, 0.4) !important;
+  }
+
+  .btn-clear {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .btn-clear:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+  }
+
+  .btn-swap {
+    padding: 0.8rem !important;
+    background: rgba(45, 143, 95, 0.3) !important;
+    border: 1px solid rgba(45, 143, 95, 0.5) !important;
+    border-radius: 50% !important;
+    color: #4db380 !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.2rem !important;
+  }
+
+  .btn-swap:hover {
+    background: rgba(45, 143, 95, 0.6) !important;
+    border-color: #3d8f5f !important;
+    transform: rotate(180deg) !important;
+  }
+
+  /* Flights list container */
+  .flights-list-container {
+    background: rgba(15, 15, 35, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 15px !important;
+    padding: 2rem !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    animation: slideUp 0.8s ease-out 0.1s both !important;
+  }
+
+  .flights-title {
+    color: #ffffff !important;
+    font-size: 1.3rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+    text-shadow: 0 0 15px rgba(45, 143, 95, 0.4) !important;
+  }
+
+  .list-group {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .list-group-item {
-      background-color: #1f1f1f; /* Темний фон для елементів списку */
-      border: none; /* Без обводки */
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(45, 143, 95, 0.2) !important;
+    border-radius: 10px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
   }
 
   .list-group-item:hover {
-      background-color: #333; /* Зміна фону елемента при наведенні */
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(45, 143, 95, 0.5) !important;
+    transform: translateX(5px) !important;
+    box-shadow: 0 5px 15px rgba(45, 143, 95, 0.2) !important;
   }
 
-  .pagination .page-link {
-      color: #17a2b8; /* Колір тексту для пагінації */
+  .list-group-item a {
+    color: #4db380 !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    transition: all 0.3s ease !important;
+    flex: 1 !important;
   }
 
-  .pagination .page-link:hover {
-      background-color: #17a2b8; /* Зміна фону кнопки пагінації при наведенні */
-      color: white; /* Зміна кольору тексту при наведенні */
+  .list-group-item a:hover {
+    color: #3d8f5f !important;
+    text-shadow: 0 0 10px rgba(45, 143, 95, 0.5) !important;
   }
 
-  .pagination .page-item.disabled .page-link {
-      background-color: #1f1f1f; /* Колір для неактивних кнопок */
-      color: #ccc; /* Колір тексту для неактивних кнопок */
+  .badge {
+    background: linear-gradient(135deg, #2d5f3f, #3d8f5f) !important;
+    color: #ffffff !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    margin-left: 1rem !important;
+  }
+
+  .empty-message {
+    text-align: center !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    padding: 3rem !important;
+    font-size: 1.1rem !important;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: 2rem !important;
+    gap: 0.5rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  .pagination-item {
+    padding: 0.6rem 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(45, 143, 95, 0.2) !important;
+    border-radius: 6px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    font-size: 0.9rem !important;
+  }
+
+  .pagination-item:hover:not(.disabled) {
+    background: rgba(45, 143, 95, 0.3) !important;
+    border-color: #3d8f5f !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+  }
+
+  .pagination-item.active {
+    background: linear-gradient(135deg, #2d5f3f, #3d8f5f) !important;
+    border-color: #3d8f5f !important;
+    color: #ffffff !important;
+  }
+
+  .pagination-item.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+
+  .pagination-info {
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 0.95rem !important;
   }
 </style>
 
-<div class="background-image">
-  <div class="container mt-4">
-    <!-- Search Form -->
-    <form action="" method="get" class="form-inline mb-4 p-4 rounded shadow-sm d-flex">
-      <div class="form-group mb-0 mr-2"> <!-- Change margin-bottom to 0 for better alignment -->
-        {{ search_form|crispy }}
+<div class="flights-wrapper">
+  <!-- Search Form -->
+  <div class="search-container">
+    <h2 class="search-title">🔍 Пошук рейсів</h2>
+    
+    <form action="" method="get" class="form-inline">
+      <div class="form-group">
+        <label for="source-input">Звідки</label>
+        <input type="text" id="source-input" name="source" placeholder="Місто відправлення" class="custom-input" value="{{ request.GET.source }}">
       </div>
-      <div class="form-group mb-0 mr-2"> <!-- Change margin-bottom to 0 for better alignment -->
-        {{ search_form_destination|crispy }}
-      </div>
-      <button type="submit" class="btn btn-outline-info">
-        <i class="fas fa-search"></i> Search
-      </button>
-      <button type="reset" class="btn btn-outline-info ml-2" onclick="resetSearch()">
-        <i class="fas fa-eraser"></i> Clear Search
-      </button>
-    </form>
 
-    <!-- Flight List -->
-    <div class="mb-4">
+      <button type="button" class="btn-swap" onclick="swapLocations()" title="Обміняти місцями">⇅</button>
+
+      <div class="form-group">
+        <label for="destination-input">Куди</label>
+        <input type="text" id="destination-input" name="destination" placeholder="Місто прибуття" class="custom-input" value="{{ request.GET.destination }}">
+      </div>
+
+      <button type="submit" class="btn-search">🔍 Пошук</button>
+      <button type="button" class="btn-clear" onclick="resetSearch()">🗑️ Очистити</button>
+    </form>
+  </div>
+
+  <!-- Flight List -->
+  <div class="flights-list-container">
+    <h2 class="flights-title">✈️ Доступні рейси</h2>
+    
+    {% if flight_list %}
       <ul class="list-group">
         {% for flight in flight_list %}
-        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-          <a href="{% url 'hangar:flight-details' pk=flight.id %}" class="text-decoration-none text-light">
-            {{ flight.new_name }}
-          </a>
-          <span class="badge badge-info badge-pill">{{ flight.code }}</span>
-        </li>
-        {% empty %}
-        <li class="list-group-item text-center">No flights available</li>
+          <li class="list-group-item">
+            <a href="{% url 'hangar:flight-details' pk=flight.id %}">
+              {{ flight.new_name }}
+            </a>
+            <span class="badge">⏱️ {{ flight.duration }} год</span>
+          </li>
         {% endfor %}
       </ul>
-    </div>
 
-    <!-- Pagination -->
-    <nav aria-label="Page navigation">
-      <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page=1{% if search_name %}&name={{ search_name }}{% endif %}" aria-label="First">
-            <span aria-hidden="true">&laquo;&laquo;</span>
-          </a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_name %}&name={{ search_name }}{% endif %}" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        {% endif %}
+      <!-- Pagination -->
+      {% if page_obj %}
+        <div class="pagination-container">
+          {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}" class="pagination-item">« Перша</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}" class="pagination-item">‹ Попередня</a>
+          {% else %}
+            <span class="pagination-item disabled">« Перша</span>
+            <span class="pagination-item disabled">‹ Попередня</span>
+          {% endif %}
 
-        <li class="page-item disabled">
-          <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        </li>
+          <span class="pagination-info">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
 
-        {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_name %}&name={{ search_name }}{% endif %}" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_name %}&name={{ search_name }}{% endif %}" aria-label="Last">
-            <span aria-hidden="true">&raquo;&raquo;</span>
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}" class="pagination-item">Наступна ›</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}" class="pagination-item">Остання »</a>
+          {% else %}
+            <span class="pagination-item disabled">Наступна ›</span>
+            <span class="pagination-item disabled">Остання »</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty-message">
+        📭 Рейсів не знайдено. Спробуйте змінити фільтри пошуку.
+      </div>
+    {% endif %}
   </div>
 </div>
 
 <script>
   function resetSearch() {
-    document.querySelector('form').reset();
-    window.location.href = window.location.pathname; // Refresh the page
+    document.getElementById('source-input').value = '';
+    document.getElementById('destination-input').value = '';
+    window.location.href = window.location.pathname;
+  }
+
+  function swapLocations() {
+    const sourceInput = document.getElementById('source-input');
+    const destinationInput = document.getElementById('destination-input');
+    
+    const temp = sourceInput.value;
+    sourceInput.value = destinationInput.value;
+    destinationInput.value = temp;
   }
 </script>
 
