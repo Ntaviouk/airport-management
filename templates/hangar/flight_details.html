@@ -1,62 +1,434 @@
 {% extends "base.html" %}
 {% load static %}
 
-
 {% block content %}
 <style>
-    /* Стиль для фону */
-    body {
-        background-image: url('{% static selected_image %}');
-        background-size: cover; /* Охоплює всю область, зберігаючи пропорції */
-        background-position: center; /* Вирівнює фон по центру */
-        background-repeat: no-repeat; /* Запобігає повторенню фону */
-        height: 100vh; /* Займає всю висоту вікна */
-    }
+  /* Стиль для фону */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
-    /* Додатковий стиль для контейнера */
-    .container {
-        background-color: rgba(255, 255, 255, 0.8); /* Напівпрозорий фон для кращої читабельності тексту */
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Тінь для об’єму */
+  body {
+    background-image: url('{% static selected_image %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .container-fluid > .row:first-child {
+    flex-shrink: 0;
+  }
+
+  .container-fluid > .row:last-child {
+    flex: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+  }
+
+  /* Navbar styles */
+  nav {
+    background-color: #1a1a1a !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  nav .container-fluid {
+    min-height: auto !important;
+    flex-direction: row !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .navbar {
+    background-color: #1a1a1a !important;
+    width: 100%;
+  }
+
+  .navbar-brand {
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  .navbar-nav .nav-link {
+    color: #ffffff !important;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #4db380 !important;
+  }
+
+  /* Flight details container */
+  .flight-details-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .flight-details {
+    background: rgba(15, 15, 35, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.8s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .flight-name {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 20px rgba(45, 143, 95, 0.5);
+    animation: fadeIn 1s ease-out;
+    text-align: center;
+  }
+
+  .flight-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(45, 143, 95, 0.2);
+    text-align: center;
+  }
+
+  .flight-info p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+  }
+
+  .flight-info strong {
+    color: #4db380;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .seat-selection-title {
+    color: #ffffff;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-shadow: 0 0 15px rgba(45, 143, 95, 0.4);
+  }
+
+  /* Seat selection grid */
+  .seat-selection {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(45, 143, 95, 0.2);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .seat-selection::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .seat-selection::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  .seat-selection::-webkit-scrollbar-thumb {
+    background: rgba(45, 143, 95, 0.5);
+    border-radius: 10px;
+  }
+
+  .seat-selection::-webkit-scrollbar-thumb:hover {
+    background: rgba(45, 143, 95, 0.8);
+  }
+
+  .row-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .seats-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .seat-box {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid transparent;
+  }
+
+  .available-seat {
+    background: linear-gradient(135deg, #4db380, #3d8f5f);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(45, 143, 95, 0.3);
+  }
+
+  .available-seat:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(45, 143, 95, 0.5);
+  }
+
+  .booked-seat {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    cursor: not-allowed;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .booked-seat:hover {
+    transform: none;
+  }
+
+  .seat-box input[type="checkbox"] {
+    display: none;
+  }
+
+  .seat-box.selected {
+    background: linear-gradient(135deg, #1a4d2e, #0f3d2d) !important;
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(15, 61, 45, 0.9), inset 0 0 10px rgba(0, 0, 0, 0.5);
+    border-color: #4db380 !important;
+  }
+
+  .seat-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+  }
+
+  .legend-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+  }
+
+  .legend-available {
+    background: linear-gradient(135deg, #4db380, #3d8f5f);
+  }
+
+  .legend-booked {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #2d5f3f, #3d8f5f);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(45, 95, 63, 0.5);
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transform: translateY(-3px);
+  }
 </style>
 
-<div class="container flight-details mt-4" style="max-width: 600px;">
-  <h1 class="flight-name text-center">{{ flight.new_name }}</h1>
-  <div class="flight-info mb-3 text-center">
-    <p><strong>Тривалість:</strong> {{ flight.duration }} годин</p>
-    <p><strong>Дата рейсу:</strong> {{ flight.flight_date }}</p>
-  </div>
-
-  <h4 class="text-center">Оберіть місця для замовлення:</h4>
-  <form method="post">
-    {% csrf_token %}
-    <div class="seat-selection" style="max-height: 300px; overflow-y: auto;">
-      <table class="table table-sm table-bordered text-center" style="font-size: 12px;">
-        {% for row, seat, is_available in available_seats %}
-          {% if forloop.first or row != forloop.parentloop.previous.row %}
-          <tr><th>Ряд {{ row }}</th>{% endif %}
-          <td class="{% if is_available %}available-seat{% else %}booked-seat{% endif %}" style="padding: 5px;">
-            {% if is_available %}
-              <label class="seat-label">
-                <input type="checkbox" name="seats" value="{{ row }}-{{ seat }}">
-                {{ seat }}
-              </label>
-            {% else %}
-              <span>{{ seat }}</span>
-            {% endif %}
-          </td>
-          {% if forloop.last or row != forloop.parentloop.next.row %}
-          </tr>{% endif %}
-        {% endfor %}
-      </table>
+<div class="flight-details-wrapper">
+  <div class="flight-details">
+    <h1 class="flight-name">✈️ {{ flight.new_name }}</h1>
+    
+    <div class="flight-info">
+      <p><strong>Тривалість:</strong> {{ flight.duration }} годин</p>
+      <p><strong>Дата рейсу:</strong> {{ flight.flight_date }}</p>
+      <p><strong>Всього місць:</strong> {{ flight.airplane.capacity }}</p>
     </div>
-    <button type="submit" class="btn btn-primary btn-block mt-3">Замовити квитки</button>
-  </form>
 
-  <form action="{% url 'hangar:flight-list' %}" method="get" class="back-form mt-3 text-center">
-    <input type="submit" value="Назад" class="btn btn-secondary btn-block">
-  </form>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box legend-available"></div>
+        <span>Вільне місце</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box legend-booked"></div>
+        <span>Занято</span>
+      </div>
+    </div>
+
+    <h4 class="seat-selection-title">Оберіть місця для замовлення:</h4>
+    
+    <form method="post" id="seatForm">
+      {% csrf_token %}
+      
+      <div class="seat-selection">
+        {% regroup available_seats by 0 as seats_by_row %}
+        {% for row_data in seats_by_row %}
+          <div class="row-label">🪑 Ряд {{ row_data.grouper }}</div>
+          <div class="seats-row">
+            {% for row, seat, is_available in row_data.list %}
+              {% if is_available %}
+                <div class="seat-box available-seat" data-row="{{ row }}" data-seat="{{ seat }}">
+                  <label class="seat-label">
+                    <input type="checkbox" name="seats" value="{{ row }}-{{ seat }}">
+                    {{ seat }}
+                  </label>
+                </div>
+              {% else %}
+                <div class="seat-box booked-seat">{{ seat }}</div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">🎫 Замовити квитки</button>
+    </form>
+
+    <form action="{% url 'hangar:flight-list' %}" method="get">
+      <button type="submit" class="btn btn-secondary">← Назад до рейсів</button>
+    </form>
+  </div>
 </div>
+
+<script>
+  // Handle seat selection with visual feedback
+  const seatBoxes = document.querySelectorAll('.seat-box.available-seat');
+  const selectedSeats = new Set();
+  
+  seatBoxes.forEach(box => {
+    box.addEventListener('click', function(e) {
+      e.preventDefault();
+      const checkbox = this.querySelector('input[type="checkbox"]');
+      const seatValue = checkbox.value;
+      
+      // Toggle selection
+      if (checkbox.checked) {
+        checkbox.checked = false;
+        selectedSeats.delete(seatValue);
+        this.classList.remove('selected');
+      } else {
+        checkbox.checked = true;
+        selectedSeats.add(seatValue);
+        this.classList.add('selected');
+      }
+      
+      // Update button state
+      updateButtonState();
+    });
+  });
+
+  function updateButtonState() {
+    const submitBtn = document.querySelector('.btn-primary');
+    const count = selectedSeats.size;
+    
+    if (count > 0) {
+      submitBtn.textContent = `🎫 Замовити ${count} квиток${count > 1 ? 'ів' : ''}`;
+      submitBtn.style.opacity = '1';
+    } else {
+      submitBtn.textContent = '🎫 Замовити квитки';
+      submitBtn.style.opacity = '0.6';
+    }
+  }
+  
+  // Initialize button state
+  updateButtonState();
+</script>
+
 {% endblock %}
