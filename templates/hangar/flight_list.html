@@ -369,7 +369,7 @@
 <div class="flights-wrapper">
   <!-- Search Form -->
   <div class="search-container">
-    <h2 class="search-title">🔍 Пошук рейсів</h2>
+    <h2 class="search-title">Пошук рейсів</h2>
     
     <form action="" method="get" class="form-inline">
       <div class="form-group">
@@ -384,7 +384,7 @@
         <input type="text" id="destination-input" name="destination" placeholder="Місто прибуття" class="custom-input" value="{{ request.GET.destination }}">
       </div>
 
-      <button type="submit" class="btn-search">🔍 Пошук</button>
+      <button type="submit" class="btn-search">Пошук</button>
       <button type="button" class="btn-clear" onclick="resetSearch()">🗑️ Очистити</button>
     </form>
   </div>
@@ -400,7 +400,7 @@
             <a href="{% url 'hangar:flight-details' pk=flight.id %}">
               {{ flight.new_name }}
             </a>
-            <span class="badge">⏱️ {{ flight.duration }} год</span>
+            <span class="badge"> {{ flight.duration }} год</span>
           </li>
         {% endfor %}
       </ul>

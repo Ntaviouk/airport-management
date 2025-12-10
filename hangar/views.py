@@ -93,7 +93,7 @@ class AirplaneListView(LoginRequiredMixin, ListView):
 
 class AirplaneDetailView(LoginRequiredMixin, DetailView):
     model = Airplane
-    context_object_name = "Airplane"
+    context_object_name = "airplane"
     template_name = "hangar/airplane_details.html"
 
     def get_context_data(self, **kwargs):
@@ -108,6 +108,7 @@ class AirplaneDetailView(LoginRequiredMixin, DetailView):
         selected_image = random.choice(images)
 
         context['selected_image'] = selected_image
+        context['total_seats'] = self.object.rows * self.object.seats_in_row
         return context
 
 

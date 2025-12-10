@@ -3,49 +3,240 @@
 
 {% block content %}
 <style>
-    /* Стиль для фону */
-    body {
-        background-image: url('{% static selected_image %}');
-        background-size: cover; /* Охоплює всю область, зберігаючи пропорції */
-        background-position: center; /* Вирівнює фон по центру */
-        background-repeat: no-repeat; /* Запобігає повторенню фону */
-        height: 100vh; /* Займає всю висоту вікна */
-    }
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
-    /* Додатковий стиль для контейнера */
-    .flight-details {
-        background-color: rgba(255, 255, 255, 0.8); /* Напівпрозорий фон для кращої читабельності тексту */
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Тінь для об’єму */
-        max-width: 600px;
-        margin: 0 auto; /* Вирівнює контейнер по центру */
-    }
+  body {
+    background-image: url('{% static "images/airplane_detail1.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
+  }
 
-    .flight-name {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+  .container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
 
-    .flight-info p {
-        text-align: center;
-    }
+  .container-fluid .row {
+    background: transparent !important;
+  }
 
-    .back-form {
-        text-align: center;
-        margin-top: 20px;
+  .container-fluid .col-12 {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .container-fluid > .row:first-child {
+    flex-shrink: 0;
+    background: transparent !important;
+  }
+
+  .container-fluid > .row:last-child {
+    flex: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    overflow-y: auto;
+    background: transparent !important;
+  }
+
+  nav {
+    background-color: #05070d !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  nav .container-fluid {
+    min-height: auto !important;
+    flex-direction: row !important;
+    padding: 0.5rem 1rem !important;
+    background: transparent !important;
+  }
+
+  .navbar {
+    background-color: #05070d !important;
+    width: 100%;
+  }
+
+  .navbar-brand {
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  .navbar-nav .nav-link {
+    color: #ffffff !important;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #4db380 !important;
+  }
+
+  .details-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 700px;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .airplane-details {
+    background: rgba(15, 15, 35, 0.85);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.8s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .airplane-name {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px rgba(45, 143, 95, 0.3);
+  }
+
+  .airplane-info {
+    margin-bottom: 2rem;
+  }
+
+  .airplane-info-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(45, 143, 95, 0.2);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .airplane-info-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .airplane-info-value {
+    color: #4db380;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .back-button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #2d5f3f, #3d8f5f);
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(45, 95, 63, 0.4);
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .description-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .description-item .airplane-info-label {
+    margin-bottom: 0.5rem;
+  }
+
+  .description-item .airplane-info-value {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    text-transform: none;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    z-index: -1;
+    pointer-events: none;
+  }
 </style>
 
-<div class="flight-details">
-  <h1 class="flight-name">{{ Airplane.name }}</h1>
-  <div class="flight-info">
-    <p><strong>Rows:</strong> {{ Airplane.rows }}</p>
-    <p><strong>Seats in a row:</strong> {{ Airplane.seats_in_row }}</p>
-    <p><strong>Description:</strong> {{ Airplane.description }}</p>
+<div class="overlay"></div>
+
+<div class="details-wrapper">
+  <div class="airplane-details">
+    <h1 class="airplane-name">✈️ {{ airplane.name }}</h1>
+    
+    <div class="airplane-info">
+      <div class="airplane-info-item">
+        <span class="airplane-info-label">Рядків</span>
+        <span class="airplane-info-value">{{ airplane.rows }}</span>
+      </div>
+      
+      <div class="airplane-info-item">
+        <span class="airplane-info-label">Місць в ряду</span>
+        <span class="airplane-info-value">{{ airplane.seats_in_row }}</span>
+      </div>
+
+      <div class="airplane-info-item">
+        <span class="airplane-info-label">Загалом місць</span>
+        <span class="airplane-info-value">{{ total_seats }}</span>
+      </div>
+    </div>
+
+    {% if airplane.description %}
+    <div class="airplane-info-item description-item">
+      <span class="airplane-info-label">Опис</span>
+      <span class="airplane-info-value">{{ airplane.description }}</span>
+    </div>
+    {% endif %}
+
+    <a href="{% url 'hangar:Airplane-list' %}" class="back-button">← Назад до списку літаків</a>
   </div>
-  <form action="{% url 'hangar:Airplane-list' %}" method="get" class="back-form">
-    <input type="submit" value="Back" class="btn btn-primary">
-  </form>
 </div>
+
 {% endblock %}
