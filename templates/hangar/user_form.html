@@ -1,36 +1,467 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
-    background-image: url('{% static "images/registration.jpg" %}');
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, #0a2e0a, #1a4d2e, #0d3d2d) !important;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+    animation: gradientShift 15s ease infinite;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .container-fluid > .row:first-child {
+    flex-shrink: 0;
+  }
+
+  .container-fluid > .row:last-child {
+    flex: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .container-fluid > .row:last-child > .col-12 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Navbar styles */
+  nav {
+    background-color: #1a1a1a !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  nav .container-fluid {
+    min-height: auto !important;
+    flex-direction: row !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .navbar {
+    background-color: #1a1a1a !important;
+    width: 100%;
+  }
+
+  .navbar-brand {
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  .nav-link {
+    color: #ffffff !important;
+  }
+
+  .nav-link:hover {
+    color: #4db380 !important;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .auth-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .auth-container {
+    background: rgba(15, 15, 35, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.8s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent,
+      rgba(45, 143, 95, 0.1),
+      transparent
+    );
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-header h1 {
     color: #ffffff;
-    font-family: Arial, sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 20px rgba(45, 143, 95, 0.5);
+    animation: fadeIn 1s ease-out;
   }
 
-  .form-container {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 2rem;
+  .auth-header p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    animation: fadeIn 1.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .auth-form {
+    position: relative;
+    z-index: 1;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+    animation: slideInLeft 0.6s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .form-group:nth-child(1) { animation-delay: 0.2s; }
+  .form-group:nth-child(2) { animation-delay: 0.3s; }
+  .form-group:nth-child(3) { animation-delay: 0.4s; }
+  .form-group:nth-child(4) { animation-delay: 0.5s; }
+  .form-group:nth-child(5) { animation-delay: 0.6s; }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .auth-form label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .auth-form input[type="text"],
+  .auth-form input[type="password"],
+  .auth-form input[type="email"] {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    max-width: 400px;
-    margin: auto;
-    margin-top: 10%;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
   }
 
-  input[type="submit"] {
-    margin-top: 1rem;
+  .auth-form input[type="text"]:focus,
+  .auth-form input[type="password"]:focus,
+  .auth-form input[type="email"]:focus {
+    outline: none;
+    border-color: #3d8f5f;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px rgba(45, 143, 95, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .auth-form input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .auth-form p {
+    margin-bottom: 1.5rem;
+  }
+
+  .helptext {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #2d5f3f, #3d8f5f);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: slideInLeft 0.6s ease-out 0.7s both;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .submit-btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(45, 95, 63, 0.5);
+  }
+
+  .submit-btn:active {
+    transform: translateY(-1px);
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 1.5s ease-out;
+    max-width: 400px;
+  }
+
+  .auth-footer p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+
+  .auth-footer a {
+    color: #4db380;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .auth-footer a:hover {
+    color: #3d8f5f;
+    text-shadow: 0 0 10px rgba(45, 143, 95, 0.5);
+  }
+
+  .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+  }
+
+  .errorlist li {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+    animation: shake 0.5s;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  /* Particles decoration */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .particle-1 {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(45, 143, 95, 0.2), transparent);
+    top: 10%;
+    left: 10%;
+    animation: float 6s infinite ease-in-out;
+  }
+
+  .particle-2 {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(61, 143, 95, 0.2), transparent);
+    top: 60%;
+    right: 15%;
+    animation: float 8s infinite ease-in-out 1s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-30px) translateX(20px); }
+  }
+
+  /* Progress indicator */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    animation: pulse 2s infinite;
+  }
+
+  .dot:nth-child(1) { animation-delay: 0s; }
+  .dot:nth-child(2) { animation-delay: 0.3s; }
+  .dot:nth-child(3) { animation-delay: 0.6s; }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.3); opacity: 1; }
   }
 </style>
-<div class="form-container">
-  <h1>Create Your Profile</h1>
-  <form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-primary" value="Submit">
-  </form>
+
+<!-- Animated stars background -->
+<div class="stars">
+  <div class="star" style="top: 15%; left: 25%; animation-delay: 0s;"></div>
+  <div class="star" style="top: 25%; left: 75%; animation-delay: 0.5s;"></div>
+  <div class="star" style="top: 55%; left: 15%; animation-delay: 1s;"></div>
+  <div class="star" style="top: 75%; left: 65%; animation-delay: 1.5s;"></div>
+  <div class="star" style="top: 35%; left: 55%; animation-delay: 2s;"></div>
+  <div class="star" style="top: 65%; left: 35%; animation-delay: 2.5s;"></div>
+  <div class="star" style="top: 45%; left: 85%; animation-delay: 0.8s;"></div>
+</div>
+
+<div class="auth-wrapper">
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  
+  <div class="auth-container">
+    <div class="auth-header">
+      <div class="progress-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <h1>🛫 Реєстрація</h1>
+      <p>Створіть обліковий запис для доступу до системи</p>
+    </div>
+
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="helptext">{{ field.help_text }}</small>
+          {% endif %}
+          {% if field.errors %}
+            <ul class="errorlist">
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="submit-btn">
+        Зареєструватися
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Вже маєте обліковий запис? <a href="{% url 'login' %}">Увійти</a></p>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
