@@ -721,7 +721,7 @@ This project is developed for educational purposes and is available under the MI
 
 **Dmytro Daniuk**
 
-- Email: dimasdaniuk911@gmail.com
+- Email: dimasdaniuk@gmail.com
 - LinkedIn: [linkedin.com/in/dmytrodaniuk](https://www.linkedin.com/in/dmytrodaniuk)
 - GitHub: [@Ntaviouk](https://github.com/Ntaviouk)
 - Telegram: [@Ntaviouk](https://t.me/Ntaviouk)
