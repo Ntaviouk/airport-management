@@ -20,10 +20,12 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'hangar:user-profile' pk=user.id %}">{{ user.username }}</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item logout-item">
           <form action="{% url 'logout' %}" method="post" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-link nav-link">Log Out</button>
+            <button type="submit" class="btn btn-link nav-link logout-btn">
+              <span class="logout-icon">⎋</span> Log Out
+            </button>
           </form>
         </li>
         {% else %}
@@ -40,23 +42,31 @@
 </nav>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
   .main-navbar {
     background-color: #05070d !important;
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.45);
     position: sticky;
     top: 0;
     z-index: 100;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   .navbar-brand {
     font-weight: 700;
     color: #ffffff !important;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    font-size: 1.3rem;
+    font-family: 'Inter', sans-serif;
   }
 
   .navbar-nav .nav-link {
     color: #f5f5f5 !important;
     font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+    font-size: 0.95rem;
   }
 
   .navbar-nav .nav-link:hover {
@@ -68,10 +78,45 @@
     text-decoration: none;
     padding-left: 0;
     padding-right: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   .btn-link:hover {
     color: #4db380 !important;
+  }
+
+  .logout-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .logout-item form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
+  .logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .logout-icon {
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: inline-block;
+    transform: rotate(0deg);
+  }
+
+  .logout-btn:hover .logout-icon {
+    transform: translateX(-2px);
+    transition: transform 0.2s ease;
   }
 
   .navbar-toggler {
